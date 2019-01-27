@@ -1,0 +1,36 @@
+* BONUS: If you search for 'vivotab note 8 линукс linux' on http://youtube.com - you can find videos by a Russian hacker/modder who managed to install Linux on the ASUS vivotab note 8 (+its wacom stylus) - yeah, the device is a bit old, but it is functional...
+I first found about this particular portable device from http://speedypainter.altavista.org .
+You may wish to buy an external rechargeable battery for this device as well as an USB-OTG cable and an external HDD/SSD/USB-flashstick for additional storage...
+
+
+
+http://radialmenu.weebly.com
+
+toolbar creator = http://forum.tabletpcreview.com/threads/toolbar-creator-v-2-2-beta-available-for-download.63014/
+
+asus vivotab note 8 newest driver: https://www.asus.com/Tablets_Mobile/ASUS_VivoTab_Note_8_M80TA/HelpDesk_Download/ + latest wacom feel driver - https://us.wacom.com/en/feeldriver/
+https://blackink.cz/tablet-pressure-curve-tool/ - for wacom pen tablets and wacom non-LCD graphics tablets ; 
+
+https://digimend.github.io/
+https://digimend.github.io/tablets/ - linux drivers for non-wacom graphics tablets
+https://www.xp-pen.com/download/index
+https://www.xp-pen.com/download-430.html
+https://m.ebay-kleinanzeigen.de/s-anzeige/artisul-d10-lcd-zeichen-tablet/1890615770-285-4570
+
+http://linuxwacom.sourceforge.net/
+
+asus transformer mini
+
+asus transformer book
+samsung slate 7
+artisul D10 or artisul D16, etc.
+
+wacom intuos3 a4/a5/a3
+wacom one 13
+older wacom cintiq's
+lenovo thinkpad x220t / x230t ; x200t, x201t
+
+apple ipad (2018) + apple pen/stylus 2 + procreate app + mypaint app + krita app
+
+for lame(r) capacitive-LCD tablets&smartphones&phablets:
+TabletGfx (github.com, only for linux) + for-tablets finger-like rubber-ball-end pen

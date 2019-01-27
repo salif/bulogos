@@ -1,0 +1,976 @@
+## :memo: -> :loudspeaker: :sound: &#x1F444; Original idea for an open-source CLI/GUI/Web speech-synthesis app for computer pronunciation of texts in the contemporary Bulgarian language ##
+
+Оригинална идея за програма от типа гласов/речев(и) синтезатор, за компютърно произношение на текстове, написани на съвременния български език, с лиценз на свободен софтуер с отворен код (и с платена версия с малко добавки).
+
+Идея за `GovoritelBG-ss` (c) 2018-2019 sahwar (github.com/sahwar/, twitter.com/ve4ernik, Иван И. Курдов) <[редактирано]> / [редактирано] и други.
+
+It is still rough around the edges as an idea but the core app idea&data-structures are here in this document (while also being in continous revision, further tweaking/details-finetuning & development).
+
+**Tags/Keywords/Ключови думи:** <small>speech synthesis engine, Bulgarian-language speech synthesis engine and speech-synthesizer app, гласов синтезатор, речев синтезатор, преобразуване на писмен текст в компютърно произнесена (изговорена) реч, гласово възпроизвеждане на текст на български, "От текст към говор" (TTS), текст към реч чрез компютърна програма, computer text-to-speech synthesis, програма свободен софтуер с отворен код, посричково произнасяне, дифони, IPA, МФА, extIPA, X-SAMPA, Z-SAMPA, GitHub, espeak, MBROLA, original research, syllabification algorithms, contemporary Bulgarian syllable patterns, experimental application software, assistive software for blind and sight-impaired people, social-care software for disabled people; ... tts/TTS/T2S (Text-to-speech, speech synthesis), Speech Recognition, Voice Activity Detection, Natural Language Processing (NLP; not to be confused with neuro-linguistic programming (NLP)!), voice/speech assistant</small>.
+
+_Third-party data to use in `GovoritelBG-ss`:_
+Using **the new Bulgarian-language syllabification (syllable-separation) algorithm (better than the old one from TeX BG):
+http://mirror.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex**
+https://t.co/m4rPDuWQVD?amp=1
+https://www.ctan.org/tex-archive/language/hyph-utf8
+https://github.com/hyphenation/tex-hyphen
+(and also the old TeX algorithm for Bulgarian-language syllabification!)
+and [syllable-patterns for the contemporary Bulgarian language taken from my General Linguistics class at university and generously supplied by my lecturer Assistant Boryan Yanev](https://twitter.com/ve4ernik/status/582996507776823296) (pasted below for convenience), etc.
+
+_Theoretical foundations of this Bulgarian-language TTS (text-to-speech) engine/app:_
+* A list of the Bulgarian alphabet as used in contemporary Bulgarian:
+Аа Бб Вв Гг Дд Ее Жж Зз Ии Йй Кк Лл Мм Нн Оо Пп Рр Сс Тт Уу Фф Хх Цц Чч Шш Щщ Ъъ Ьь Юю Яя (Ѝѝ) (obsolete letters found in older pre-1945 texts: Ѣѣ Ѫѫ)...
+* A list of all 45-48 IPA phonemes of the contemporary Bulgarian language (standard Bulgarian):
+https://en.wikipedia.org/w/index.php?title=Bulgarian_phonology&oldid=880623002, https://bg.wikipedia.org/w/index.php?title=%D0%91%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D1%81%D0%BA%D0%B8_%D0%B5%D0%B7%D0%B8%D0%BA&oldid=8897355#%D0%A4%D0%BE%D0%BD%D0%B5%D1%82%D0%B8%D1%87%D0%BD%D0%B0_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0.
+
+_**Approximate letter-to-IPA-phoneme correspondence table for the contemporary Bulgarian language (for Standard [literary] Bulgarian)**_
+(the total number of phonemes is considered to be 45–48; add them to this file: 
+https://github.com/[редактирано]/Bulogos/blob/master/diphones-combinations-bg.txt ):
+
+**Vowel phonemes** (theoretically considered to be 8 in total — /i/, /u/, /o/, /ɤ/, /ɛ/, /ɔ/, /ɐ/, /a/):
+
+(Letter—phoneme)
+и /i/, (/ɪ/)
+у 	/u /; /o/
+е /ɛ/
+ъ /ɤ̞/, /ɤ/; /ɐ/; ( (/ʌ/), (/ə/) )
+о /ɔ/, /o/
+а /a/, /ɐ/; /ɑ/, /ʌ/, /ɤ̞/; (/ʌ/), (/ə/)
+
+ю 	/ju/ (at syllable-start), /ʲu/; /jo/, /ʲo/
+я 	/ja/ (at syllable-start), /ʲa/; /jɐ/, /ʲɐ/; /jɤ̞/, /ʲɤ̞/
+
+( Ѫ (голям юс, голяма носовка) /о<sup>н</sup>/, /ъ<sup>н</sup> (Old Bulgarian); /ɤ/, /ɤ̞/ (as a now-obsolete letter found in pre-1945 Bulgarian orthography in Bulgarian writings) )
+
+**Consonant phonemes** (WARNING: depending on stress position and position within a word, the letters represent the _voiceless_ IPA phoneme of the voiced—voiceless pair, even though the orthographic letter is the same): 
+
+м /m/
+н /n/ 			
+м<sup>ь</sup> /mʲ/
+н<sup>ь</sup> /ɲ/ 	
+п /p/
+б /b/
+т /t/
+д /d/
+к /k/
+г /ɡ/
+п<sup>ь</sup> /pʲ/
+б<sup>ь</sup> /bʲ/
+т<sup>ь</sup> /tʲ/
+д<sup>ь</sup> /dʲ/
+к<sup>ь</sup> /kʲ/
+г<sup>ь</sup> /ɡʲ/
+ц /t͡s/
+дз /d͡z/
+ч /t͡ʃ/
+дж /d͡ʒ/ 		
+ц<sup>ь</sup> /t͡sʲ/ 			
+ф /f/ 
+в /v/
+с /s/
+з /z/
+ш /ʃ/
+ж /ʒ/
+х /x/ 	
+ф<sup>ь</sup> /fʲ/
+в<sup>ь</sup> /vʲ/
+с<sup>ь</sup> /sʲ/
+з<sup>ь</sup> /zʲ/ 		
+р /r/ 			
+р<sup>ь</sup>/rʲ/ 			
+й /j/ (semi-vowel, considered a 'consonant', e.g. C in CVC... syllable pattern/model notation)
+л, /l/, /ɫ/ 			
+л<sup>ь</sup> /ʎ/
+
+<!--
+Frequency list generated from text corpora:
+https://www.gstatic.com/i18n/corpora_wordcounts_bg.txt
+http://dcl.bas.bg/tchestotni-retchnitsi-na-balgarskiya-ezik-2/
+
+All BG IPA phonemes fulllist (several versions...):
+
+A LIST OF ALL BULGARIAN PHONEMES for SPEECH-SYNTHESIS apps
+====== ====== ====== ====== ======
+
+IPA-bg-list_v1
+
+и /i/, (/ɪ/)
+у /u/, /o/ !! [o]
+е /ɛ/
+ъ /ɤ̞/, /ɤ/; /ɐ/; ( (/ʌ/), (/ə/) )
+о /ɔ/, /o/ !! [o]
+а /a/, /ɐ/; /ɑ/, /ʌ/, /ɤ̞/; (/ʌ/), (/ə/)
+ю /ju/ (at syllable-start), /ʲu/; /jo/, /ʲo/
+я /ja/ (at syllable-start), /ʲa/; /jɐ/, /ʲɐ/; /jɤ̞/, /ʲɤ̞/
+м /m/
+мь /mʲ/
+н /n/
+нь /ɲ/
+п /p/
+б /b/
+т /t/
+д /d/
+к /k/
+г /ɡ/
+пь /pʲ/
+бь /bʲ/
+ть /tʲ/
+дь /dʲ/
+кь /kʲ/
+гь /ɡʲ/
+ц /t͡s/
+дз /d͡z/
+ч /t͡ʃ/
+дж /d͡ʒ/
+ць /t͡sʲ/
+ф /f/
+в /v/
+с /s/
+з /z/
+ш /ʃ/
+ж /ʒ/
+х /x/
+фь /fʲ/
+вь /vʲ/
+сь /sʲ/
+зь /zʲ/
+р /r/
+рь/rʲ/
+й /j/ (semi-vowel, considered a 'consonant', e.g. C in CVC... syllable pattern/model notation)
+л, /l/, /ɫ/
+ль /ʎ/
+
+---
+
+ipa-bg-list_v2
+
+/i/
+(/ɪ/)
+/u /
+/o/
+/ɛ/
+/ɤ̞/
+/ɤ/
+/ɐ/
+(/ʌ/)
+(/ə/)
+/ɔ/
+/o/
+/a/
+/ɐ/
+/ɑ/
+/ʌ/
+/ɤ̞/
+(/ʌ/)
+(/ə/)
+/ju/
+/ʲu/
+/jo/
+/ʲo/
+/ja/
+/ʲa/
+/jɐ/
+/ʲɐ/
+/jɤ̞/
+/ʲɤ̞/
+/m/
+/mʲ/
+/n/
+/ɲ/
+/p/
+/b/
+/t/
+/d/
+/k/
+/ɡ/
+/pʲ/
+/bʲ/
+/tʲ/
+/dʲ/
+/kʲ/
+/ɡʲ/
+/t͡s/
+/d͡z/
+/t͡ʃ/
+/d͡ʒ/
+/t͡sʲ/
+/f/
+/v/
+/s/
+/z/
+/ʃ/
+/ʒ/
+/x/
+/fʲ/
+/vʲ/
+/sʲ/
+/zʲ/
+/r/
+/rʲ/
+/j/
+/l/
+/ɫ/
+/ʎ/
+
+---
+
+ipa-bg-list_v3
+
+/i/
+(/ɪ/)
+/u /
+/o/
+/ɛ/
+/ɤ̞/
+/ɤ/
+/ɐ/
+(/ʌ/)
+(/ə/)
+/ɔ/
+/o/
+/a/
+/ɐ/
+/ɑ/
+/ʌ/
+/ɤ̞/
+(/ʌ/)
+(/ə/)
+/ju/
+/ʲu/
+/jo/
+/ʲo/
+/ja/
+/ʲa/
+/jɐ/
+/ʲɐ/
+/jɤ̞/
+/ʲɤ̞/
+/m/
+/mʲ/
+/n/
+/ɲ/
+/p/
+/b/
+/t/
+/d/
+/k/
+/ɡ/
+/pʲ/
+/bʲ/
+/tʲ/
+/dʲ/
+/kʲ/
+/ɡʲ/
+/t͡s/
+/d͡z/
+/t͡ʃ/
+/d͡ʒ/
+/t͡sʲ/
+/f/
+/v/
+/s/
+/z/
+/ʃ/
+/ʒ/
+/x/
+/fʲ/
+/vʲ/
+/sʲ/
+/zʲ/
+/r/
+/rʲ/
+/j/
+/l/
+/ɫ/
+/ʎ/
+[xʲ] {Хюстън /xʲustɤn/ ('Houston')}
+[d͡z] {Дзержински /d͡zɛrʒinski/ ('Dzerzhinsky')}
+[d͡zʲ] {Ядзя /jad͡zʲa/, ('Jadzia')}
+
+---
+
+ipa-bg-list_v4_alt
+C (25? or 21 'hard' (non-palatalized) phonemes?):
+p
+b
+t
+d
+k
+g
+m
+[ɱ]
+n
+[ŋ]
+f
+v
+s
+z
+ʃ
+ʒ
+x
+[ɣ]
+ʦ
+ʣ
+ʧ
+ʤ
+r
+j
+l
+...
+C + /j/ or /{consonant phoneme here}ʲ/ {{17 'soft' (palatalized or palatal) consonants}}: [pʲ, bʲ, tʲ, dʲ, c (=kʲ ), ɟ (=gʲ ), ʦʲ, ʣʲ, mʲ, ɲ (=nʲ ), rʲ, fʲ, vʲ, sʲ, zʲ, ç (=xʲ ), ʎ (=lʲ )].
+
+V (8?):
+i
+u
+[o]
+ɤ
+ɛ
+ɔ
+[ɐ]
+a
+{[ɜ], [ə], [o˔]} - [ə-ɐ-ˈa/ɤ-ə], [o˔ -o-ˈɔ/u-o˔]
+
+http://www.personal.rdg.ac.uk/~llsroach/phon2/b_phon/b_phon.htm
+https://en.wikipedia.org/w/index.php?title=Bulgarian_phonology&oldid=880623002
+
+---
+
+ipa-bg-list_v5_alt
+
+V-12:
+и /i/
+у /u/, [o]
+е /ɛ/
+ъ /ɤ/, [ɐ](/ə/)
+о /ɔ/, [o]
+а /a/, [ɐ]
+
+C-43:
+m
+(ɱ)
+n
+(ŋ)
+mʲ
+ɲ 	
+p (p b)
+b (p b)
+t (t d)
+d (t d)
+k (k ɡ)
+ɡ (k ɡ)
+pʲ
+bʲ
+tʲ
+dʲ
+c
+ɟ 	
+t͡s
+(d͡z)
+t͡ʃ
+d͡ʒ 		
+t͡sʲ
+(d͡zʲ) 		
+f
+v
+s
+z
+ʃ
+ʒ
+x, (ɣ)
+fʲ
+vʲ
+sʲ
+zʲ
+(xʲ)
+r 			
+rʲ 			
+(w) (a newer semivowel which appears primarily in foreign borrowings, e.g. from English)	
+j (the only native semivowel!)
+ɫ
+(l) 			
+ʎ
+
+https://en.wikipedia.org/w/index.php?title=Bulgarian_phonology&oldid=880623002
+
+---
+
+ipa-bg-list_v6_alt
+
+ Consonants IPA 	Examples 	Nearest English equivalent
+BG 	MK
+b 	баба 	box
+c 	кьопоолу,[1] ќар 	cute
+d 	дом 	dust
+d͡z 	дзифт, ѕвезда 	birds
+d͡ʒ 	джем, џем 	jab
+f 	филм 	fact
+ɡ 	гарван 	good
+ɟ 	гяур,[1] ѓавол 	argue
+j 	сойка, пајак 	yes
+k 	къща, куќа 	skill
+l 	лимон 	leap
+ɫ 	лош 	all
+ʎ 	любов, љубов 	million
+m 	море 	mocha
+n 	нос 	north
+ɲ 	баня, бања 	canyon
+ŋ 	банка 	sing
+p 	пет 	speak
+r 	работа 	trilled r, like in Spanish
+	r̩ 	прст 	US: verb (trilled)
+s 	стол 	salt, mask
+ʃ 	шума 	sugar
+t 	тайна, тајна 	style
+t͡s 	цар 	bats
+t͡ʃ 	чай, чај 	cheese
+v 	вода 	view
+x 	хартия, хартија 	loch (Scottish English)
+z 	зима 	zoo
+ʒ 	жълт, жолт 	pleasure
+Marginal consonants IPA 	Examples 	Nearest English equivalent
+BG 	MK
+	ɫ̩ 	Попокатепетл 	little
+	n̩ 	њутн 	button
+ɣ 		видях го 	between go and ahold
+ç 		Хюз 	huge
+w 		уиски 	water 
+
+
+ Vowels IPA 	Examples 	Nearest English equivalent
+BG 	MK
+a 	брат 	father
+ɤ 		кът 	plus (General American, Scottish English)
+ɛ 	цена 	edge
+i 	сив 	police
+ɔ 	слон 	off
+u 	хубав, убав 	pool
+Reduced vowels IPA 	Examples 	Nearest English equivalent
+BG 	MK
+ɐ 		щерка, камък 	sofa
+o 		нещо, уста 	thought (RP), coat (Scottish English)
+Marginal vowels IPA 	Examples 	Nearest English equivalent
+BG 	MK
+	ə 	к’смет 	sofa
+Other symbols IPA 	Explanation
+BG 	MK
+ˈ 	Denotes stress on the following syllable
+ˌ 		Denotes secondary stress on the following syllable
+◌ʲ 		Denotes palatalization of the preceding consonant 
+
+https://en.wikipedia.org/w/index.php?title=Help:IPA/Bulgarian_and_Macedonian&oldid=878565175
+
+---
+
+the 11 syllable patterns of standard contemporary Bulgarian (permutations with the above IPA phonemes/diphones/allophones//phones:
+
+The 11 types of syllables (syllable patterns) in the contemporary Bulgarian language according to linguists: open syllables: V, CV, CCV, CCCV, closed syllables: VC, CVC, CCVC, CVCC, CCVCC, VCC, CCCVC. NOTE: 'C' = consonant from the above list of IPA phonemes, 'V' = vocal/vowel from the above list of IPA phonemes, semivowels are considered 'consonants' for these patterns. There must be a permutation-combination list (as a JSON file and .txt table) of all the possible syllable variations following these patterns - to be utilized by this app.)
+
+======
+
++ Bulgarian-orthography-to-IPA examples from the 2008 (+online PDF version) and 2012 official dictionaries
+
+======
+
+(older SAMPA:
+archive.is/vpfjl
+https://www.phon.ucl.ac.uk/home/sampa/bul-uni.htm (http://archive.is/HKWaW)
+https://www.phon.ucl.ac.uk/home/sampa/bulgar.htm (http://archive.is/FFB9y)
+
+ Vowels
+
+The vowel system of Contemporary Standard Bulgarian comprises 6 phonemes, as follows.
+
+	SAMPA symbol	Gloss and... 	Transcription of keyword
+	i		peak		pik
+	e		heat		pek
+	a		again		pak
+	@		but		p@k
+	O		under		pOt
+	u		crack!		puk
+
+In unstressed positions there is considerable qualitative reduction of vowels.
+
+Consonants
+
+The consonant system comprises 21 'hard' (non-palatalized) phonemes, as follows.
+
+	p		again		pak		
+	b		ball		bal
+	t		there		tam
+	d		give		dam
+	k		how		kak
+	g		gas		gas
+	ts		tsar		tsar
+	dz		ting		dz@n
+	tS		pine		tSam
+	dZ		glass		dZam
+	f		foul		fal
+	v		bank		val
+	s		alone		sam
+	z		dice		zar
+	S		shawl		Sal
+	Z		pity		Zal
+	x		plight		xal
+	m		swing		max
+	n		us		nas
+	l		varnish		lak
+	r		once		ras
+
+plus the semivowel
+
+	j		eaten		jal
+
+There are also 17 'soft' (palatalized or palatal) consonants, which are shown by the symbol ' (ASCII 39) written after the consonant symbol. Before /i, e/ they do not contrast with the corresponding 'hard' consonants, but elsewhere they do.
+
+	p'		sung		p'al
+	b'		white		b'al
+	t'		them		t'ax
+	d'		share		d'al
+	k'		profit		k'ar
+	g'		rose		g'ul
+	ts'		whole		ts'al
+	dz'		waste		dz'an
+	f'		phew!		f'ut
+	v'		apathetic	v'al
+	s'		sown		s'al
+	z'		waste		z'an
+	x'		Hume (name)	x'um
+	m'		wineskin	m'ax
+	n'		dumb		n'am
+	l'		poured		l'ax
+	r'		cut		r'as
+
+---
+
+This version is for Unicode-compliant browsers that can handle the Cyrillic alphabet. Others should use the ASCII/ANSI version.
+
+Vowels
+
+The vowel system of Contemporary Standard Bulgarian comprises 6 phonemes, as follows.
+
+SAMPA symbol	Gloss  		Transcription 	Orthography
+i		peak		pik		пик
+e		heat		pek		пек
+a		again		pak		пак
+@		but		p@k		пък
+O		under		pOt		под
+u		crack!		puk		пук
+
+In unstressed positions there is considerable qualitative reduction of vowels.
+
+Consonants
+
+The consonant system comprises 21 'hard' (non-palatalized) phonemes, as follows.
+
+p		again		pak		пак
+b		ball		bal		бал
+t		there		tam		там
+d		give		dam		дам
+k		how		kak		как
+g		gas		gas		газ
+ts		tsar		tsar		цар
+dz		ting		dz@n		дзън
+tS		pine		tSam		чам
+dZ		glass		dZam		джам
+f		foul		fal		фал
+v		bank		val		вал
+s		alone		sam		сам
+z		dice		zar		зар
+S		shawl		Sal		шал
+Z		pity		Zal		жал
+x		plight		xal		хал
+m		swing		max		мах
+n		us		nas		нас
+l		varnish		lak		лак
+r		once		ras		раз
+
+plus the semivowel
+
+j		eaten		jal		ял
+
+There are also 17 'soft' (palatalized or palatal) consonants, which are shown by the symbol ' (ASCII 39) written after the consonant symbol. Before /i, e/ they do not contrast with the corresponding 'hard' consonants, but elsewhere they do.
+
+p'		sung		p'al		пял
+b'		white		b'al		бял
+t'		them		t'ax		тях
+d'		share		d'al		дял
+k'		profit		k'ar		кяр
+g'		rose		g'ul		гюл
+ts'		whole		ts'al		цял
+dz'		waste		dz'an		дзян
+f'		phew!		f'ut		фют
+v'		apathetic	v'al		вял
+s'		sown		s'al		сял
+z'		waste		z'an		зян
+x'		Hume (name)	x'um		хюм
+m'		wineskin	m'ax		мях
+n'		dumb		n'am		ням
+l'		poured		l'ax		лях
+r'		cut		r'as		ряз
+
+======
+
+2002bgdict.pdf --- IPA transcription examples
+
+-->
+
+**Example approximate IPA transcriptions of some Bulgarian words and multiword expressions (MWE, phrases):**
+
+жена̀ /ʒɛˈnɑ/
+вода̀ /voˈdɑ/
+ста̀вам /ˈstɑvʌm/
+бра̀ва /ˈbrɑvʌ/
+мъжа̀ /mɐˈʒɤ̞/
+чета̀ /ʧɛˈtɤ̞/
+зѐле /ˈzɛlɛ/
+пѐсен /ˈpɛsɛn/ 	
+син /ˈsin/
+ѝстина /ˈistinɐ/ 	
+ко̀тка /ˈkɔtkɐ/
+боза̀ /boˈza/ 	
+сту̀д /ˈstut/
+уста̀ /oˈsta/ 	
+ъ̀гъл /ˈɤ̞gɐl/
+ка̀мък /ˈkamɐk/ 	
+ю̀жен /ˈjuʒɛn/
+дю̀ля /dʲˈulʲa/
+ютѝя /joˈtija/
+кюфтѐ /kʲoftˈɛ/
+господа̀рю /gospoˈdarjo/
+я̀то /ˈjato/
+бя̀л /ˈbʲal/
+ярѐм /jɐrˈɛm/
+ба̀мя /ˈbamʲɐ/
+деня̀т /dɛˈnjɤ̞t/
+вървя̀ /vɐrˈvjɤ̞/
+_(To add more later...)_
+
+
+
+
+
+* 11-те вида срички в българския език според езиковедите:
+отворени: V, CV, CCV, CCCV затворени: VC, CVC, CCVC, CVCC, CCVCC, VCC, CCCVC #linguistics.
+(The same in English: The 11 types of syllables (syllable patterns) in the contemporary Bulgarian language according to linguists: open syllables: V, CV, CCV, CCCV, closed syllables: VC, CVC, CCVC, CVCC, CCVCC, VCC, CCCVC. NOTE: 'C' = consonant from the above list of IPA phonemes, 'V' = vocal/vowel from the above list of IPA phonemes, semivowels are considered 'consonants' for these patterns. There must be a permutation-combination list (as a JSON file and .txt table) of all the possible syllable variations following these patterns - to be utilized by this app.)
+* `--arguments` in the app for setting of word-stress(es), intonation, voice pitch, speech speed, suprasegmental speech changes, etc., with related JSON-config files and regex-matched strings that when inserted in a text file parsed by `GovoritelBG-ss`, aid in the proper pronunciation of words, phrases, and sentences, and/or change speech-synthesis options (including suprasegmental speech patterns, and the optional full-word/phrase pronunciation of punctuation marks&other Unicode characters, etc.).
+* A simple JSON files for applying the few rules about writing-vs-pronunciation mismatches in contemporary Bulgarian (Bulgarian-language writing is mostly phonemic but with a number of notable exceptions listed as a rules-set) and for letter(s)/syllables/diphones-to-phonemes correspondences ruleset;
+* Sample sentences to test with `GovoritelBG-ss` when it is enough functional:
+https://bg.wikiquote.org/wiki/%D0%91%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D1%81%D0%BA%D0%B8_%D0%BF%D0%BE%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D1%86%D0%B8_%D0%B8_%D0%BF%D0%BE%D0%B3%D0%BE%D0%B2%D0%BE%D1%80%D0%BA%D0%B8, https://bg.wikipedia.org/wiki/%D0%9F%D0%B0%D0%BD%D0%B3%D1%80%D0%B0%D0%BC%D0%B0.
+* Transliteration systems for Bulgarian:
+https://bg.wikipedia.org/w/index.php?title=%D0%A2%D1%80%D0%B0%D0%BD%D1%81%D0%BB%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F_%D0%BD%D0%B0_%D0%B1%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D1%81%D0%BA%D0%B8%D1%82%D0%B5_%D0%B1%D1%83%D0%BA%D0%B2%D0%B8_%D1%81_%D0%BB%D0%B0%D1%82%D0%B8%D0%BD%D1%81%D0%BA%D0%B8&oldid=9053881
+
+
+### 0. App name ###
+
+**`$ GovoritelBG-ss`** (SS = SpeechSynthesis)
+
+**GlashatayBG-ss**
+
+### 1. General idea ###
+
+(c) 2018-2019 sahwar (github.com/sahwar/, twitter.com/ve4ernik, Ivan I. Kurdov) <[редактирано]>, et al.
+
+(**THE MOST IMPORTANT PART**)
+
+<q>(to add from my rough research-paper .txt files from my other PCs & my related tweets from my Twitter account...)</q>
+
+For now, see the short summary from here before I upload the full explanation of the idea from my .txt files:
+https://twitter.com/search?l=&q=speech+synthesis%20from%3Ave4ernik&src=typd
+https://twitter.com/search?l=&q=%D1%81%D1%80%D0%B8%D1%87%D0%BA%D0%B8%20from%3Ave4ernik&src=typd
+https://twitter.com/search?l=&q=%D1%81%D1%80%D0%B8%D1%87%D0%BA%D0%B8%20from%3Ave4ernik&src=typd
+
+I've now added a more thorough explanation below (**This _IS NOT_ the same as in my .txt files, that is pasted in the other Roman-numeral sections after I.!!!**).
+
+**I. 7 core speech-synthesis subsystems/'engines' included with `govoritelbg-ss`:**
+
+**1)** An engine which parses input text, applies a syllable-separation algorithm (several flavors to select from via `--some-argument/flag-here` option, one of them is this great syllable-seperation [method](http://mirror.ctan.org/language/hyph-utf8/tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex) ), then matches the separated syllables to a JSON-file linking to human-speaker-pronounced speech-segment-recordings of the most-common syllables of the contemporary Bulgarian language, then concatenates (merges) all the text's syllables' native-human-speaker-pronounced syllable-recordings pre-supplied-by-the-app audio-files via `ffmpeg`/`libav` and generates the output file with the pronunciation which is then played to speakers **(DEFAULT engine!)**.
+
+**NOTE0:** To support multiple languages & speaker-voice datasets, there will be more `--arguments` to select language and speaker-voice dataset before generating&playing the output audio-file, but the Bulgarian language is the default one to be used for the app. Also note that there will be several configuration files (JSON/.config/.conf/.cfg/YAML/custom-txt-based formats) like those of the NVDA screen-reader app bundled with the app, and with a custom/user copy of those for the user to fine-tune the app before running it if the user doesn't like the default settings&configs of the app.
+
+**2)** Same as 1 above but instead of syllable concatenation, we use an MBROLA-based diphones human-speaker-voice audio-recordings files being concatenated (merged).
+
+**3)** Same as method 2 above but with syllable concatenation (&whitespace/pauses-between-words/strings) applied before the concatenation of MBROLA(-like) diphones.
+
+**4)** Same as method 1, but we use speaker-voice dataset(s) which are human-speech recordings of the IPA phonemes (X-SAMPA/Z-SAMPA/IPA/extIPA list of the phonemes, in a JSON file(s) listing all these phonemes and their recording audio-files), with the speaker-voice datasets being at least 3-5 supplied to choose from (a few others will be in the commercial/paid version of the app).
+
+**5)** Some computer-generated worse-sounding speech-synthesis which is programmatic-only (WITHOUT using better-sounding concatenation of pre-recorded human-voice datasets of syllables/phonemes/whole words/etc.). See for ideas: the _Toshko2_ Bulgarian-speech-synthesis app.
+
+**6)** A mixture of the above methods with the additional power of sorta-even-better-sounding generated results via the methods outlined in NOTE1 below.
+
+**7)** (some other speech-synthesis engine/subsystem to be freely supplied/plugged-in/integrated into the ap as supplied by the end-user).
+
+**NOTE1:** There will also be a `--argument` to use several dictionary datasets of pre-recorded human-speaker-voice-pronounced speech audio-file recordings of _whole-words & whole-phrases_ for even better-sounding output audio-file generated by this app (a user can also change (replace) those files OR supply a new, user-generated (manually recorded&edited) dictionary of such speaker-voice datasets.
+
+**NOTE2:** One of the config files will have NVDA-like JSON-based instructions on how to pronounce punctuation and basic post-generation speech-filters for e.g. speech-quality shifting for emphasis, questions, exclamations, quotations within the text, [Markov-chain](https://en.wikipedia.org/wiki/Markov_chain) audio-filters, [Fast Fourier Transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform) audio-filters, pitch, sound volume, sound tone, pronunciation speed (and related [Audacity](https://manual.audacityteam.org/man/index_of_effects_generators_and_analyzers.html)-like simple plug-able filters), etc.).
+
+**NOTE3:** The end-user may produce his/her own language&specific human-speaker-voice audio-recodings speech-segments (&hundreds-of-files-or-more dictionary of whole-word&whole-phrase audio-file recordings) to use with the app via another `--argument` if they don't like the default&supplied human-speaker(s) dataset audio-files used in the concatenation for the generation of the final output speech-synthesis audio-file.
+
+**NOTE4:** There will also be another `--argument` which enables the end-user to use several further JSON-config files and thus apply additional fine-tuning language-specific & source-text-file-specific audio-filters (and whole-word & whole-phrase human-recordings) based on regex matches and matches of language/dialect-specific specific substring/string language segments.
+
+_PROGRAMMING LANGUAGE(S) FOR WRITING THE APP:_ Rust, C/C++, Python3, Lua, Go, bash shell-scripting (for `ffmpeg`/`libav` use?), Perl+PCRE, Vala, FreePascal/Delphi/LazaursIDE, etc., even PHP is sorta OK-ish...
+
+_INPUT FILES:_ .txt and other text formats (maybe use `pandoc` and HTML5-parser plug-in for cleanup-to-plaintext, or maybe also have an option to change pronunciations based on those <something>substring or string</something> tags...).
+
+_OUTPUT FILES:_ .wav, .mp3, .ogg, .m4a, .flac
+
+_TO CONSIDER:_ All pre-recorded human-voice-speaker dataset recordings files SHOULD be in the same audio fileformat, with the SAME basic audio-file characteristics (e.g. 44kHZ, 20Hz-20kHz, 8-bit/16-bit/32-bit floating, lossless or lossy filetype/recording, with those of similar type being of approximately the same short audio-duration/length).
+All audio-files of each dataset should be those of the voice/speech of a single human (with basic bio-sex&bio-age&approx. geographical-dialect characteristics information) for optimal results!!!
+
+**SUMMARY:** The main original idea is _the **concatenation** (via open-source `ffmpeg`/`libav`) of bundled (supplied with the app) **pre-recorded audio-files containing recordings of real speech segments of human-speaker(s)' real voice** (in a normal/'flat' tone, maybe also add `--argument` for a sub-speaker-voice dataset of a different speech quality), with (optional/mandatory) **syllable-segmentation-algorithm(s) parsing** done beforehand, and with **optional post-generating speech audio-filters (e.g. language-specific orthography-to-orthoepy differences, etc.) applied** & outputted to a second generated resulting audio-file_.
+
+Characters-to-sounds per-language correspondence rulesets, NVDA/SpeechLab/etc.-like configs/settings, voice-qualities adjustable outputting audio settings, etc.
+
+_Syllables (syllable patterns (CVV, VCV, etc. (**[Bulgarian syllable patterns taken from my General Linguistics class at university and generously supplied by my lecturer Assistant Boryan Yanev](https://twitter.com/ve4ernik/status/582996507776823296))** ) with all combinations of all corresponding language-specific phonemes - forming the syllable), diphones (~2 phones flowing together in connected speech), and (ext)IPA/X-SAMPA/Z-SAMPA phomenic/phonological phonemes (approximatly matched to lang-specific charset subset of Unicode UTF-8)_; plus whole-word and whole-phrase human pronunciation audio-files, and human pronunciation audio-files for punctuation characters (and their prosodic audio-filters effects?) and maybe the whole Unicode character set(?)...
+
+**AIMS/GOALS OF THIS APP:** This is all in order to produce SOMEWHAT better-sounding speech-synthesis results than those of entirely programmatically-generated speech-synthesis engines which sound too robotic. The whole app `$ govoritelbg-ss` is about SIMPLE, QUICK & DIRTY speech synthesis of texts (mostly in the contemporary Bulgarian language with with ~45 phonemes in its orthoepy standardized contemporary variant which is parallel to the standard contemporary (semi-)formal written Bulgarian).
+
+Making a speech-synthesis engine that emulates the whole human tract/speech organs is too cumbersome and complex, while speech-synthesis engines which are entirely programmatic-only sound TOO robotic, while we are aiming at a more natural-sounding result which is UNDERSTANDABLE to native-language human listeners (despite still being sorta/somewhat robotic/strung-together-sounds-sounding).
+
+Other existing speech-synthesis engines (including for contemporary Bulgarian speech) use sorta similar techniques and algorithms, BUT NOT exactly as this one & are somewhat limited for our use (CLI&GUI-for-Linux-Windows-macOS & Web & Android) and ARE NOT open-source, that's why we're making this one!!! `GovoritelBG-ss` may find use by Google for its Google Translate website (for the Bulgarian speech-synthesis core(s)/feature).
+
+## WE ARE LOOKING FOR PROGRAMMERS TO CODE THIS APP with collaboration with the author of the idea for this speech-synthesis app!! Please apply now to this potentially very-handy&useful open-source software project! ##
+
+II. (to add by pasting here from my twitter.com/ve4ernik tweets about this project...)
+
+III. (to add by pasting here from my numerous original-research & general-ideas .txt files about this project...)
+
+IV. (...)
+
+V. (...)
+
+...
+
+### 2. Features ###
+* _CLI version:_ supply a text input file, add arguments/flags, output the result to an .mp3/.ogg/.flac/.wav file, play the generated audio-file result; built-in manual: `man govoritelbg-ss`, `govoritelbg-ss --help` (in English AND Bulgarian), `govoritelbg-ss --version (-v)` (version information), `govoritelbg-ss --update (-U)` (check for newer version and update the app if one is available), etc. commandline arguments and config (sub)options.
+
+* _GUI version:_ same as CLI but with GUI controls
+
+* _Web-version:_ similar to the GUI version but simplified
+
+* _Android version:_ similar to the desktop GUI version but also adding these additional features:
+(1) take photo (or supply image from phone memory or URL address) and process with the open-source [`tesseract-OCR`](https://github.com/tesseract-ocr/tesseract) engine, then play the OCR'd result as BG speech-synthesized output audio-file;
+(2) visual&audio-recorded (language-specific) warning for when the Android device's battery level is running low; 
+(3) option to import your own speaker-pronunciation dataset files for use with the app;
+
+### 3. Target platforms ###
+* GNU/Linux (CLI&GUI), Windows (CLI&GUI), macOS (CLI&GUI), HTML5 Web-interface (web-browsers, cross-platform), Android (GUI)
+
+### 4. Target end-users ###
+* Blind or sight-impaired Bulgarians, the general public, tests for writers, editors, proofreaders/spellcheckers/copywriters, and reseachers; also as a toy for demonstrating speech-synthesis to children and the general public.
+
+### 5. License ###
+* open-source: BSD-3 (modified) or MIT, commercial for a few bucks = additional speaker pronunciation packs (aside from the free&open-source bundled with the app)
+
+### 6. Similar software (for inspiration / ideas / alternatives / collaboration) ###
+
+* [0 (eSpeak-bg & gespeaker+espeak-bg (лично аз, @sahwar, преведох gespeaker, но и други може да са превеждали след мен...))]( http://www.gatchev.info/blog/?p=1163) (резервно копие: http://archive.is/BaQTS ), SpeechLab2 (by BAS DCL (BACL)) [1](broken hyperlink) [2](https://play.google.com/store/apps/details?id=org.bacl.android.speechlab2g&hl=bg) [3](http://k-kolev1985.blogspot.com/2013/10/speechlab.html) [4](https://assistfoundation.eu/speechlab-2-0-%D0%B7%D0%B0-android/) **[5](https://bezmonitor.com/speechlab.htm)** **[6](https://web.archive.org/web/20160304103558/http://www.bacl.org/speechlabbg.html)** **[7](https://web.archive.org/web/20160407183942/http://bacl.org/specbg.html)** [8](https://groups.google.com/forum/#!topic/nalafche/ztjLn9CZTeI), NVDA (BG) [1](https://www.nvaccess.org/download/), espeak-bg [1](http://espeak.sourceforge.net/index.html) [2](https://github.com/rhdunn/espeak) [3](https://github.com/espeak-ng/espeak-ng) & gespeaker [1](http://www.muflone.com/gespeaker/english/) [2](https://github.com/muflone/gespeaker), Balabolka [1](http://www.cross-plus-a.com/bg/balabolka.htm), Govorilka [1](https://www.vector-ski.ru/vecs/govorilka/) [2](http://www.softportal.com/software-376-govorilka.html), FestivalTTS [1](http://www.cstr.ed.ac.uk/projects/festival/) [2](https://en.wikipedia.org/wiki/Festival_Speech_Synthesis_System), MBROLA project [1](http://tcts.fpms.ac.be/synthesis/mbrola.html) [2](https://en.wikipedia.org/wiki/MBROLA), [3](https://github.com/numediart/MBROLA) [4](https://github.com/espeak-ng/espeak-ng/blob/master/docs/mbrola.md) [5](http://espeak.sourceforge.net/mbrola.html), [Toshko2](http://twenkid.com/software/toshko2/) ( https://mobile.twitter.com/tshcrp ), БЪРБОРИНО v3.0 [1](http://bivaood.com/) (програма за звуково управление (програма за звуков контрол) на компютъра чрез диктуване на български език с ключови думи; базирана на Google Translate Web-Speech speech-recognition/Gboard-for-Google-Android-voice-vontrol-similar-to-Microsoft-Cortana-websearch-API-searchbar API?) [2](https://www.download.bg/index.php?cls=forum&mtd=thread&t=294563&p=10), Google Web-Speech API Demo [1](https://www.google.com/intl/en/chrome/demos/speech.html), dictation.io Voice Recognition (Google Android app) [1](https://chrome.google.com/webstore/detail/voice-recognition/ikjmfindklfaonkodbnidahohdfbdhkn?hl=en) [2](https://dictation.io/) [3](https://dictation.io/languages/en), SpeechTexter (Диктуване на текст с помощта на функцията за разпознаване на говор, гласово разпознаване на български, преобразуване на речта в текст, онлайн многоезичен речник разпознавател) [1](https://www.speechtexter.com/help) [2](https://chrome.google.com/webstore/detail/voice-to-text/jdcdafhjjjfnkoeilnjmnadadaoehgdc?hl=bg), Диктуване на текст с помощта на функцията за разпознаване на говор (Windows 7 - Microsoft Help) [1](https://support.microsoft.com/bg-bg/help/14198/windows-7-dictate-text-using-speech-recognition) [2](httpsttps://support.office.com/bg-bg/article/%D0%94%D0%B8%D0%BA%D1%82%D1%83%D0%B2%D0%B0%D0%BD%D0%B5-%D0%BD%D0%B0-%D1%82%D0%B5%D0%BA%D1%81%D1%82-%D1%81-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%82%D0%B0-%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F%D1%82%D0%B0-%D0%B7%D0%B0-%D1%80%D0%B0%D0%B7%D0%BF%D0%BE%D0%B7%D0%BD%D0%B0%D0%B2%D0%B0%D0%BD%D0%B5-%D0%BD%D0%B0-%D0%B3%D0%BE%D0%B2%D0%BE%D1%80-05725ee2-ae2e-438f-847c-b80e754eb50b) [3](https://support.office.com/bg-bg/article/%D0%B8%D0%B7%D0%BF%D0%BE%D0%BB%D0%B7%D0%B2%D0%B0%D0%BD%D0%B5-%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F%D1%82%D0%B0-%D0%B7%D0%B0-%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D1%83%D0%B2%D0%B0%D0%BD%D0%B5-%D0%BD%D0%B0-%D1%82%D0%B5%D0%BA%D1%81%D1%82-%D0%B2-%D0%B3%D0%BE%D0%B2%D0%BE%D1%80-%D0%B8%D0%B7%D1%80%D0%B5%D1%87%D0%B8-%D0%B7%D0%B0-%D1%87%D0%B5%D1%82%D0%B5%D0%BD%D0%B5-%D0%BD%D0%B0-%D1%82%D0%B5%D0%BA%D1%81%D1%82-%D0%BD%D0%B0-%D0%B3%D0%BB%D0%B0%D1%81-459e7704-a76d-4fe2-ab48-189d6b83333c), [Gallaudet University - Voice and Speech Physiology Lab](https://www.gallaudet.edu/department-of-hearing-speech-and-language-sciences/research/voice-and-speech-physiology-lab), etc.
+* [https://github.com/nvaccess/nvda/wiki/ExtraVoices for NVaccess NVDA (MS Windows-only)](https://github.com/nvaccess/nvda/wiki/ExtraVoices), [https://github.com/Olga-Yakovleva/RHVoice](https://github.com/Olga-Yakovleva/RHVoice), [The HMM/DNN-based Speech Synthesis System (HTS)](http://hts.sp.nitech.ac.jp/), [the Festival Speech Synthesis System (English, Spanish, etc.)](http://www.festvox.org/festival/), [the DFKI MARI Text-to-Speech System (German, English, etc.)](http://mary.dfki.de/), [Flite+hts_engine (English)](http://hts-engine.sourceforge.net/), [Open JTalk (Japanese)](http://open-jtalk.sourceforge.net/), [CMU ARCTIC database (English)](http://www.festvox.org/cmu_arctic/), [HTK](http://htk.eng.cam.ac.uk/), [SPTK](http://sp-tk.sourceforge.net/), [hts_engine API](http://hts-engine.sourceforge.net/), [Festival](http://www.cstr.ed.ac.uk/projects/festival/), [Festvox](http://www.festvox.org/), [DFKI MARY](http://mary.dfki.de/), [STRAIGHT](http://www.wakayama-u.ac.jp/~kawahara/STRAIGHTtrial/), [Open JTalk](http://open-jtalk.sourceforge.net/), [Julius](http://julius.sourceforge.jp/en_index.php?q=index-en.html), [FestVox Blizzard Challenge](http://festvox.org/blizzard/), [ISCA SynSIG](http://www.synsig.org/)
+
+````It is compatible with standard text-to-speech interfaces on these platforms: SAPI5 on Windows, Speech Dispatcher on GNU/Linux and Android's text-to-speech APIs. It can also be used by the NVDA screen reader directly (the driver is provided by RHVoice itself).````
+
+* http://bezmonitor.com/ & http://bezmonitor.com/chetene/index.htm (**ЦЕЛИЯТ УЕБСАЙТ ТРЯБВА ДА СЕ АРХИВИРА ЧРЕЗ archive.org Wayback Machine и чрез archive.to / archive.today !!!**); SpeechLab & SpeechLab2 (Спийчлаб с глас „Гергана“; за Windows & Google Android - в Google Play, платено, но евтино), [Innoetics (с глас „Ирина“)](http://www.innoetics.com), [Nuance Vocalizer (с глас „Дария“](https://play.google.com/store/apps/details?id=es.codefactory.vocalizertts); за Google Android, в Google Play, платено, но евтино), "Нов глас" на фирмата Манро, [espeak (eSpeak, Испийк) - ](http://espeak.sourceforge.net) + gespeaker (GUI)&mbrola, http://www.bacl.org/speechlabbg.html, [http://www.bacl.org/speechlabbg.html - Страницата за Спийчлаб на сайта на Българската асоциация за компютърна лингвистика](http://www.bacl.org/speechlabbg.html), [Демонстрация на Спийчлаб за Андроид - http://www.youtube.com/watch?v=4s2UgwYgbkM](http://www.youtube.com/watch?v=4s2UgwYgbkM), [Купуване на Спийчлаб за Андроид - https://play.google.com/store/apps/details?id=org.bacl.android.speechlab2g](https://play.google.com/store/apps/details?id=org.bacl.android.speechlab2g)
+* http://www.horizonti.bg/ - Справочник за JAWS, Ръководство за ABBYY FineReader, безплатни книги, помагала, ръководства и самоучители
+* http://kdkmaster.klangoblog.net/
+https://bezmishka.org/taxonomy/term/2
+* Betsy-speech-synthesis-Bulgarian_by_Borislav-Zahariev_written-in-Assembly = `toros.zip`:
+````
+Валидният набор от фонеми, които са съобразени с особеностите на българския
+език е следния:
+&*0
+. ? , - : И Е Е/ А А/ Ъ Ъ/ О О/ У У/ Р Р/ Л Л/ Л//
+М Н Й Ь Ю Я С Ш Ф Х З Ж В Ч Ц Щ Б Д Г П Т К
+&*1
+````
+
+* https://github.com/omaciel/Melissa-Core = виртуален асистент за Windows, Linux и macOS, който има възможности за гласов синтез (A lovely virtual assistant for OS X, Windows and Linux systems, it uses Google Chrome's speech-to-text engine, (macOS') Mac OS X's `say` command, Linux's `espeak` command or Ivona TTS.)
+* [DSpeech](https://www.kaldata.com/%d1%81%d0%be%d1%84%d1%82%d1%83%d0%b5%d1%80/dspeech-268550.html)
+[Google Tacotron 2 TTS engine](https://www.kaldata.com/it-%d0%bd%d0%be%d0%b2%d0%b8%d0%bd%d0%b8/google-%d0%bf%d1%80%d0%b5%d0%b4%d1%81%d1%82%d0%b0%d0%b2%d0%b8-tacotron-2-%d0%bd%d0%be%d0%b2%d0%b0%d1%82%d0%b0-%d1%81%d0%b8%d1%81%d1%82%d0%b5%d0%bc%d0%b0-%d0%b7%d0%b0-%d0%bf%d1%80%d0%b5%d0%be%d0%b1-269970.html)
+http://dimiodati.altervista.org/zip/dspeech.zip
+
+* https://www.slant.co/topics/4456/~open-source-text-to-speech-tts-engines
+
+TTS:
+MaryTTS, eSpeak, gESpeaker, FestivalTTS, Merlin, Mimic, BalabolkaTTS
+STT (speech-to-text):
+CMU Sphinx, Julius, HTK, Kaldi
+SpeechLab2 (paid but cheap, for Google Android - available at the Google Play web-store) = 
+SpeechLab1 - freeware, freely given to blind people, see: 
+
+
+https://www.slant.co/topics/9395/~open-source-speech-to-text-stt-engines
+
+#### 6.1. Post-2020 developments in Bulgarian-language speech-synthesis software #####
+
+1. Google Translate introduced initial support for basic Bulgarian-language speech-synthesis BUT, sadly, they probably didn't use any of the R&D by me ( github.com/[редактирано]/Bulogos/GovoritelBG-ss... or Toshko2 or gespeaker/MBROLA-Bulg-BG, etc. ... 
+Here's a demo(nstration):
+https://translate.google.com/?sl=bg&tl=en&text=%D0%A2%D0%BE%D0%B2%D0%B0%20%D0%B5%20%D1%82%D0%B5%D1%81%D1%82%20%D0%B7%D0%B0%20%D0%B8%D0%B7%D0%B3%D0%BE%D0%B2%D0%B0%D1%80%D1%8F%D0%BD%D0%B5%20%D0%BD%D0%B0%20%D0%BD%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D1%8F%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%20%D1%87%D1%80%D0%B5%D0%B7%20%D0%BD%D0%BE%D0%B2%D0%B8%D1%8F%20%D0%B1%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D0%BE%D0%B5%D0%B7%D0%B8%D1%87%D0%B5%D0%BD%20%D0%B5%D0%B7%D0%B8%D0%BA%D0%BE%D0%B2%20%D0%BF%D0%B0%D0%BA%D0%B5%D1%82%20%D0%B7%D0%B0%20%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D0%BE-%D0%BA%D0%BE%D0%BC%D0%BF%D1%8E%D1%82%D1%8A%D1%80%D0%BD%D0%BE-%D1%81%D0%BE%D1%84%D1%82%D1%83%D0%B5%D1%80%D0%BD%D0%BE%20%D1%81%D0%B8%D0%BD%D1%82%D0%B5%D0%B7%D0%B8%D1%80%D0%B0%D0%BD%D0%B5%20%D0%BD%D0%B0%20%D0%B3%D0%BB%D0%B0%D1%81%D0%BE%D0%B2%D0%B0%20%D1%80%D0%B5%D1%87%20%D0%BD%D0%B0%20%D0%B1%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D1%81%D0%BA%D0%B8%20%D0%B5%D0%B7%D0%B8%D0%BA%20%D1%87%D1%80%D0%B5%D0%B7%20%D0%93%D1%83%D0%B3%D1%8A%D0%BB%20%D0%9F%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D0%B0%D1%87%20(Google%20Translate%20-%20http%3A%2F%2Ftranslate.google.com%20)!%0A%D0%97%D0%B0%20%D1%81%D1%8A%D0%B6%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%2C%20%D0%BD%D0%B5%20%D0%B8%D0%B7%D0%BF%D0%BE%D0%BB%D0%B7%D0%B2%D0%B0%20%D0%B8%D0%B4%D0%B5%D0%B8%20%D0%B8%20%D0%BF%D1%80%D0%B8%D0%BD%D0%BE%D1%81%D0%B8%20%D0%BE%D1%82%20github.com%2Fsahwar%2FBulogos%2FGovoritelBG-ss.md%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20Toshko2%20BG%20TTS%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20azbuki.bg%20%D0%B8%D0%BB%D0%B8%20ibl.bas.bg%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20NVDA%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20gespeaker%2FMBROLA-Bulg-BG%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20bacl.bg%2FSpeechLab2%20(Google%20Android)%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20Balabolka%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20Orca%20screen%20reader%20(Linux)%20%D0%B8%D0%BB%D0%B8%20%D0%BE%D1%82%20FestivalTTS%20(Linux)...%20%D0%9D%D0%B0%D1%82%D0%B8%D1%81%D0%BD%D0%B5%D1%82%D0%B5%20%D0%B1%D1%83%D1%82%D0%BE%D0%BD%D0%B0%20%D1%81%20%D0%B2%D0%B8%D1%81%D0%BE%D0%BA%D0%BE%D0%B3%D0%BE%D0%B2%D0%BE%D1%80%D0%B8%D1%82%D0%B5%D0%BB%D1%8F%20%D0%BE%D1%82%D0%B4%D0%BE%D0%BB%D1%83%2C%20%D0%B7%D0%B0%20%D0%B4%D0%B0%20%D1%87%D1%83%D0%B5%D1%82%D0%B5%20%D1%82%D0%BE%D0%B7%D0%B8%20%D0%B1%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D0%BE%D0%B5%D0%B7%D0%B8%D1%87%D0%B5%D0%BD%20%D1%80%D0%B5%D1%87%D0%B5%D0%B2%D0%B8%20%D1%81%D0%B8%D0%BD%D1%82%D0%B5%D0%B7%20%D0%BE%D1%82%20%D0%93%D1%83%D0%B3%D1%8A%D0%BB%20%D0%9F%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D0%B0%D1%87.&op=translate
+3. I chatted with Aleksandar Kamburov ( http://kamburov.net - author of the famous app AEDict.exe - AEnglishDictionary, similar to gbgdict from http://bgoffice.sourceforge.net ) and he shared with me that a new and very promising project by a talented young Bulgarian programmer was making headlines in the field of Bulgarian-language speech synthesis:
+````
+https://github.com/AzBuki-ML/
+АзБуки.ML
+AzBuki.ML е иновативна machine learning платформа - съвкупност от компютърни програми за обработка на българския език и слово.
+ Bulgaria
+ https://azbuki-ml.com
+public-data
+Public
+Custom-built Bulgarian language data sets, used by АзБуки.ML for sentiment analysis, text classification, summarisation and generation. Open-source & free to use in any ML project.
+Custom-built Bulgarian language data sets, used by АзБуки.ML for sentiment analysis, text classification, summarisation and generation. Open-source & free to use in any ML project.
+
+azbuki-ml.com/
+Topics
+data-science machine-learning bulgarian data-set
+https://github.com/AzBuki-ML/public-data
+
+https://www.bing.com/search?q=bulgarian+speech+synthesis+google+play&qs=n&form=QBRE&sp=-1&pq=bulgarian+speech+synthe+google+play&sc=0-35&sk=&cvid=34F5AA3372BD4894A6CA863E1E1A193E
+https://play.google.com/store/apps/details?id=com.skycode.tts&hl=en_US&gl=US
+https://www.appbrain.com/app/bulgarian-text-to-speech-tts/com.skycode.tts
+
+atodorov.org
+````
++ вижте уебсайта на българина, написал статията „Как спасих правилния графичен дизайн на знака за валутата евро“ - май там имаше статия за иновативен речеви синтез на български език чрез роботски модел на човешкия речеви апарат (т.е. роботски модел на главата и устата (устния тракт и трахеята и т.н.) плюс опит за софтуерно моделиране на същото...
+4. Mozilla Common Voice & tatoeba.org & librivox.org & archive.org & storytel.bg - тонове записани с български гласове е-книги и отделни изречени...
+
+### 7. (G)UI ideas from Librera Reader (for Google Android) ###
+
+````
+Some ideas borrowed from:...
+
+TTS Engine: 
+Language+Voice+male/female[+age+dialect/accent/geographic-location+datetime-stamp-year] pack:
+Speed:
+Pitch:
+Volume:
+Expressive breaks: ?? ms (e.g. 350) {and/or when you supply a .txt file, you can place SPECIAL IPA&orthography-altering-the-pronunciation HTML/XML/SGML/JSON/HAML/CommonMark tags + |like|this|+more| special regex/regexp that supply the wordform paradigm (словообразувателната парадигма + неотговарящи на нея различаващи се отделни словоформи, примерно речетатив като „пека /пекЪ/ -> пеЧен, изпечени, запичам, изпичам“ и т.н.!) ~added 01-May-2020 by https://github.com/[редактирано]/Bulogos }
+Reading ends in: xxx hh yyy min zzz sec
+[?] Resume from last punctuation mark: '[]()...'
+Read punctuation in full: '[]()...'
+Read unknown characters as their Unicode UTF-8 hexadecimal point number+title: yes/no (language for pronunciation = ?)
+Break at page turn / break after number of lines: ...
+Pause TTS-reading on incoming calls, messages, SMSs, etc.
+Pause TTS-reading on incoming new Android notifications (DANGEROUS!): ...
+Enable remote bookmarks (Start/Stop button): ...
+Record TTS from whole file: Start / Pause / Cancel
+{ + exact-frequency-or-frequency-span-band speech-synthesizer sound-generator app! Frequencies below 7.9Hz(Earth's natural Schummann resonance)-20 Hz are HARMFUL to humans and above 20kHz could be deadly to humans; these are used by psychotronics weapons/devices like HAARP, GWEN towers, number(s) stations, military/police LRAD & V-MADs (there are YouTube videos about those actually existing!), 5G towers, possibly by Elon Musk's Starlink satellites (unless those satellites are just for beaming cheap/free Internet to remote areas, and for military/GoogleEarth/GoogleMaps/openstreetmap.org geo-spying/surveillance/observation/&MIA-rescuing-retrieval-missions, and for laser-cutting&destroying/crumbling/deflecting big asteroids which pose a threat to planet Earth (also by using atomic bombs & hydrogen bombs (even of newer designs!)! HOWEVER, if these satellites are used to do electronic electromagnetic harassment, heatwave-torturing, mind-control remote brain-scanning/earworm-putting-audio/video-playback-for-MKULTRA/Monarch-mind-control consciousness/brain/neural-system-harming or for laser-incineration of people or for destroying objects on Earth via lasers or bombs, then ve4ernik/sahwar does NOT support said Starlink satellites...}
+````
+
+(**Other app names considered:**
+
+IzrechitelBG-ss, GlasitelkoBG, GlasnostBG-ss, GlasoveBG-ss, GlasilkaBG-ss, HortuvayBG-ss,  QSDIzrechilkaBG_SpeechSynth (QSD='quick, simple, and dirty), IzrechilkaBG, ProiznositelBGSpeechSynth, Govoritel(che)BGSpeechSynth, IzgovoritelBG, HortuvayNaBG_SpeechSynth, fossBGSpeechSynth, IzgovoriNaBG_SpechSynth, IzrechilkoBG, KazhiBG, ProiznositelBG_SpeechSynth, BGSpeechSynth, BulgSynth, etc.)
+
+````
+
+https://www.google.com/inputtools/help/languages.html - Google Translate IME Input Tools + handwriting-recognition sketchpad-panel
+https://www.google.com/inputtools/try/
+https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/shape/sc_digits.html ( http://archive.is/O8kL0 )
+http://shapecatcher.com/index.html ( http://archive.is/Ndf1l )
+
+https://translate.google.com/intl/en/about/languages/
+https://support.google.com/translate/#googtrans/en/bg&topic=7011755
+https://translate.google.com/intl/en/about/
+https://translate.google.com/intl/en/about/forbusiness/
+https://cloud.google.com/translate/
+https://translate.google.com/?hl=bg&tab=TT&authuser=0
+'Dattebayo!' (Naruto Shippuuden catchprase often used by Naruto; it was translated as '... Believe it!' in the official Naruto English-dub for English-language TV; first released as https://horriblesubs.info/ ( https://horriblesubs.info/images/b/covid19.png ) & as http://dattebayo.com/ - it later emerged as official English-subtitles via paid web-streaming platform http://crunchyroll.com ): https://translate.google.com/?hl=bg&tab=TT&authuser=0#view=home&op=translate&sl=bg&tl=en&text=%D0%9C%D1%80%D0%B0%D0%B7%D1%8F%20%D1%82%D0%BE%D0%B2%D0%B0%20%D1%88%D0%B8%D0%B1%D0%B0%D0%BD%D0%BE%20%D0%B3%D0%BE%D0%B2%D0%B5%D0%B4%D0%BE!%20%D0%94%D0%B5%D0%B9%D0%B1%D0%B0%20%D0%B8%20%D0%B6%D0%B8%D0%B2%D0%BE%D1%82%D0%B0%2C%20%D0%B4%D0%B5%D0%B9%D0%B1%D0%B0!
+
+
+Download & use Google Translate
+
+You can translate text, handwriting, photos, and speech in over 100 languages with the Google Translate app. You can also use Translate on the web.
+Computer AndroidiPhone & iPad
+
+To translate text, speech, and websites in more than 100 languages, go to Google Translate page.
+
+Предоставено от Google ПреводачПреводач
+
+````
+
+````
+http://bezmonitor.com/ - <bezmonitor@gmail.com> (Viktor) (useful information for blind Bulgarians working with computers - полезна информация за слепи българи, работещи с компютри: http://bezmonitor.com/news.htm , http://bezmonitor.com/other.htm , http://bezmonitor.com/speechlab.htm)
+Вижте още: NVDA, Festival TTS, CMU Sphinx TTS, gespeaker/espeak/espeak-ng+MBROLA, FreeTTS, Balabolka TTS, JAWS screen reader (екранен четец), Toshko2 TTS <twenkid@gmail.com>, Google Translate speech-synthesis, )
+* https://github.com/zzw922cn/awesome-speech-recognition-speech-synthesis-papers
+* https://github.com/topic/tts
+
+https://gist.github.com/erogol/97516ad65b44dbddb8cd694953187c5b
+Hands-on example for TTS https://github.com/mozilla/TTS & https://github.com/common-voice/common-voice (TTS datasets of human-voices recordings...) & http://tatoeba.org & http://dumps.wikimedia.org & http://dicts.info & http://dict.cc & http://rechnik.info + http://bgjargon.com & http://urbandictionary.org & more... + "БЪРБОРИНО" + gespeaker+MBROLA-for-Bulgarian + toshko2 TTS app + CMU Sphinx/Festival ; + notepad++ speak/TTS+DSpellchecker plugin; + google chrome: bgspeech2
+
+This notebook trains Tacotron model on LJSpeech dataset.
+https://gist.github.com/sahwar/8eae919103915aed718d03af75b0d1e7
+
+https://archive.is/62c.hit.bg
+https://yovko.net/initsiativa-shlokavitsa/
+
+http://archive.is/BaQTS#selection-787.28-799.60
+https://archive.is/o/BaQTS/zver.fsa-bg.org/pipermail/dict/2011-March/005151.html
+---
+регистрирах следния пощенски списък:
+espeak-bg@freelists.org
+Можете да се запишете като изпратите писмо на:
+espeak-bg-request@freelists.org със subject ‘subscribe’
+или от страницата на списъка:
+http://www.freelists.org/list/espeak-bg
+Всеки на когото му допада този проект и иска да се ангажира в развитието му е добре дошъл.
+Списъка има и публичен архив чрез който всеки може да следи как се движат нещата.
+Новите постове може да се следят и чрез RSS.
+
+https://archive.is/o/BaQTS/fsa-bg.org/project/gtp/wiki/ToDo
+http://archive.is/BaQTS
+http://www.gatchev.info/blog/?p=1163
+http://gatchev.info/articles/articles_bg.html
+
+http://www.gatchev.info/blog/
+http://www.gatchev.info/blog/?p=2302
+http://www.gatchev.info/blog/?page_id=409
+http://twenkid.com - toshko2
+
+
+
+
+
+
+
+
+
+За TTS не съм сигурен, че има хляб вече.
+
+Tosh (Арнаудов) от Пловдив правеше това:
+https://github.com/Twenkid/Toshko_2
+ 
+Има и един младеж, Радостин Чолаков, който е много активен по медиите:
+https://azbuki-ml.com/speech
+etc.
+
+````
+
+````
+Mozilla Voice & http://tatoeba.org
+https://github.com/common-voice/common-voice
+
+http://librivox.org
+http://bezmonitor.com
+https://github.com/common-voice/common-voice
+What is Common Voice project?
+http://azbuki-ml.com (!!!) - пробвайте демото
+http://www.numenta.org
+
+
+Common Voice is Mozilla's initiative to help teach machines how real people speak.
+Voice is natural, voice is human. That’s why we’re excited about creating usable voice technology for our machines. But to create voice systems, developers need an extremely large amount of voice data.
+Most of the data used by large companies isn’t available to the majority of people. We think that stifles innovation. So we’ve launched Common Voice, a project to help make voice recognition open and accessible to everyone.
+Now you can donate your voice to help us build an open-source voice database that anyone can use to make innovative apps for devices and the web. Read a sentence to help machines learn how real people speak. Check the work of other contributors to improve the quality. It’s that simple!
+
+
+You can find more details on the official website https://voice.mozilla.org/
+
++ the CommonVoice app:
+https://f-droid.org/en/packages/org.commonvoice.saverio/
+
+````
+
+### 9. Spellchecker software for the Bulgarian language
+* DSpellchecker plugin for Notepad++ (may also be adapted for use with NeoVim, Spacemacs, jEdit, notepad2 (notepa2-mod fork, not the original), notepad3, notepad2e, GitHub Atom text-editor , etc.
+* those F(L)OSS spellcheckers used in Mozilla Firefox, LibreOffice, Google Android OS, Google Chrome, etc:
+aspell, espell, hunspell (run via the Enchant spellchecking wrapper library!) - see: http://bgoffice.sourceforge.net
+* http://ibl.bas.bg - WinEst, MacEst - by BAS' IBL + ibl's freely-downloadable contemporary-Bulgarian-language dictionary datasets + OCR'd .pdf files of http://dv.government.bg and http://lex.bg .html/.pdf legal documents, etc. + webscraped versions of http://pcmania.bg , http://weblog.gatchev.info , & http://actualno.com & http://dnes.bg & paid-subscription libre contemporary Bulgarian-language citizen-journalism/gonze-journalism/underground-anonymous-activists' journalism websites...
+* idispellchecker + dictionary (you can use google.com to find older freeware versions of that software; newer versions are commercial paid but a free trial/demo version can also be downloaded) --- this is currently the best spellchecking app for Bulgarian, when used in combination with ОПРБЕ2012.pdf, ОПРБЕ2002.pdf, and http://kaksepishe.com & some further additions&corrections from (the yet-unfinished as of January 2022) Bulogos' BLSG style-guide and http://dictcorrect.com (but sahwar doesn't always agree with dictcorrect.com !) & with online Internet dictionary databases (http://onelook.com , http://bg.wiktionary.org , http://dicts.info/uddl/ , http://slovored.com , http://rechnik.info , http://bgjargon.com , etc.)
+* some other commercial Bulgarian-language spellchecking apps, etc. ...
+* etc.

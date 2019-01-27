@@ -1,0 +1,202 @@
+https://georgi.unixsol.org/programs/bg_names_stats/
+https://georgi.unixsol.org/programs/old/fonts/
+https://georgi.unixsol.org/programs/fjfs/
+https://georgi.unixsol.org/programs/irc/
+https://georgi.unixsol.org/programs/dosemu-cyrillic/
+
+https://georgi.unixsol.org/programs/X11/
+https://georgi.unixsol.org/programs/glog/
+https://georgi.unixsol.org/programs/adblock_prefs.txt
+https://georgi.unixsol.org/programs/egn.php?a=check&egn=9101114461
+https://georgi.unixsol.org/programs/old/bbs/
+
+https://georgi.unixsol.org/programs/pdf_invoices/
+https://georgi.unixsol.org/programs/mptsd/
+https://georgi.unixsol.org/programs/oscam/README.txt
+-- Fri Apr 20 14:39:10 EEST 2012
+https://georgi.unixsol.org/programs/phones/
+https://georgi.unixsol.org/programs/php_compile/INSTALL.txt
+https://georgi.unixsol.org/programs/qmail/
+https://georgi.unixsol.org/programs/std_cron/
+
+
+https://georgi.unixsol.org/programs/old/fonts/
+font8x8.zip
+gtfont12.zip
+sm11.zip
+tf56.zip
+vinfo21.zip
+xkb.sh
+mplayerfonts_win1251_v1.tar.gz
+https://georgi.unixsol.org/programs/mplayer/mplayerfonts_win1251_v1.tar.gz
+https://georgi.unixsol.org/programs/X11/bigfnt.bz2
+https://georgi.unixsol.org/programs/X11/corefnts.tar.bz2
+corefonts-README
+https://georgi.unixsol.org/programs/X11/corefonts-XF86Config-4.3-example
+https://georgi.unixsol.org/programs/X11/corefonts-xorg.conf-example
+https://georgi.unixsol.org/programs/X11/kkbswitch-1.3.2-i486-1.tgz
+https://georgi.unixsol.org/programs/X11/local.conf
+https://georgi.unixsol.org/programs/X11/xkb.sh
+https://georgi.unixsol.org/programs/X11/xorg-conf-nvidia-fx5200-tvout
+https://georgi.unixsol.org/programs/X11/xorg-conf-nvidia-fx5200-tvout-advanced
+https://georgi.unixsol.org/programs/X11/xorg-conf-nvidia-fx5200-tvout-advanced-1680x1050
+https://georgi.unixsol.org/programs/X11/
+---
+https://georgi.unixsol.org/programs/phones/
+https://georgi.unixsol.org/programs/pdf_invoices/
+https://georgi.unixsol.org/programs/old/lib/gunits.zip
+gunits, versavetor, units 
+https://georgi.unixsol.org/programs/num2bgmoney.php
+https://georgi.unixsol.org/programs/pdf_invoices.tar.gz
+https://georgi.unixsol.org/programs/osx_bg_phonetic_fixed.dmg.gz
+---
+https://georgi.unixsol.org/programs/libfuncs/
+https://georgi.unixsol.org/programs/pcconfig/
+https://georgi.unixsol.org/programs/videohubctrl/
+https://georgi.unixsol.org/programs/tsdumper2/
+https://georgi.unixsol.org/programs/tsdumper2/
+https://georgi.unixsol.org/programs/mrtg/
+https://georgi.unixsol.org/programs/mptsd/
+https://georgi.unixsol.org/programs/mplayer/
+https://georgi.unixsol.org/programs/dvblast/
+https://georgi.unixsol.org/programs/tomcast/
+https://georgi.unixsol.org/programs/mptsd/
+((monocast), unicast , multicast, simplex vs. half-duplex vs. full duplex (RJ45 Ethernet), omnicast
+bbs, uufi
+figlet.org & asciigen2.net & pentacom.jp pixel art maker & fontstruct.com & fontforge (new) & birdfont &  png2svg
+hexchat & adiirc & pidgin.im + github irc-relau-bridge-for-discord.com - irc clients
+https://georgi.unixsol.org/programs/irc/
+https://georgi.unixsol.org/programs/qmail/
+======
+pkill dwm ; killall dwm
+
+https://www.reddit.com/r/suckless/comments/o7cv7j/is_there_a_way_to_kill_dwm/h2y03kf?utm_medium=android_app&utm_source=share&context=3
+
+https://www.reddit.com/r/suckless/comments/o7h6gw/how_to_use_this_alpha_patch_for_dmenu/?utm_medium=android_app&utm_source=share
+https://instagram.com/baddiedafancy?utm_medium=copy_link
+
+git.suckless.org
+gitea.georgi.unixsol.org
+
+https://code.habd.as/comfusion/acme.sh
+
+https://georgi.unixsol.org/pics/vnc/
+
+https://georgi.unixsol.org/programs/
+
+https://georgi.unixsol.org/programs/umnik_src.txt
+https://georgi.unixsol.org/programs/mptsd/
+https://georgi.unixsol.org/programs/irc/
+https://georgi.unixsol.org/programs/fjfs/
+git clone git://github.com/gfto/fjfs.git make make install 
+
+https://georgi.unixsol.org/programs/bg_names_stats/
+https://georgi.unixsol.org/programs/old/fonts/
+https://georgi.unixsol.org/programs/fjfs/
+https://georgi.unixsol.org/programs/irc/
+https://georgi.unixsol.org/programs/dosemu-cyrillic/
+https://georgi.unixsol.org/programs/X11/
+https://georgi.unixsol.org/programs/glog/
+https://georgi.unixsol.org/programs/adblock_prefs.txt
+https://georgi.unixsol.org/programs/egn.php?a=check&egn=9101114461
+https://georgi.unixsol.org/programs/old/bbs/
+https://georgi.unixsol.org/programs/pdf_invoices/
+https://georgi.unixsol.org/programs/mptsd/
+https://georgi.unixsol.org/programs/oscam/README.txt
+-- Fri Apr 20 14:39:10 EEST 2012
+https://georgi.unixsol.org/programs/phones/
+https://georgi.unixsol.org/programs/php_compile/INSTALL.txt
+https://georgi.unixsol.org/programs/qmail/
+https://georgi.unixsol.org/programs/std_cron/
+
+====== 
+To spare you some time, try the following site map:
+
+root of this site - homepage (home page)
+
+my public diary / weblog/blog/Internet online personal diary
+
+pictures taken by myself / my photos&photos by me
+
+some texts that I've written / texts&docs
+
+presentations that I've presented / html5+js web-presentations
+
+my free software contributions / git-web
+
+funny pictures - funny_pics & 
+
+---
+
+JIRA
+jiro
+giro
+
+giro
+
+шконто
+
+giro
+
+шконто
+
+account
+
+
+"Джаро" (персонаж от ТВ сериала "Под прикритие", изигран/игран от БГ актьора Билалов)
+======
+qmail
+hypermail
+pine/alpine email
+evolution email
+mutt email client (utf8! + file attachments + open html emails as utf8 unicode plaintext webpage-source or prompt to open with modern full-featured html5 webbrowser) ;  xumecs?/xush?; 
+mozilla thunderbird email
+clawsmail email (** see listverse, slant.co, and compareto.net for comparison to other email clients apps)
+CLI email client - mutt ... 
+(awk, tee, xdfg, pkill, killall, sort, ascii, xorg, etc...) (unicode-cli-charmap-and-tools from github.com))
+(ratpoison)
+'killer app'
+* requiring free online Internet _encrypted_ webapp versions of popular chat-IM/VoIP-conference-videotelephony/p2p-filesharing/screensharing-screensharing/vCard-etc. apps & webUI torrents/.magnet/.metalink/.meta4/rss-webfeeds&irc-dcc-xdcc-sdcc/dc++&adc-hubs apps ~sahwar/ve4ernik
+
+===
+omegadict
+
+
+BGoffice & eurodict.com / bulgariandictionary.com & etc & rechnik.info
+aedictxp
+megadict-bg
+
+megadict-bg
+
+stardict
+
+megadict-bg
+
+stardict
+
+goldendict
+
+megadict-bg
+
+stardict
+
+goldendict
+
+dictd
+
+megadict-bg
+
+stardict
+
+goldendict
+
+dictd
+
+dict.cc
+dicts.info
+dumps.wikimedia.org
+
+---
+
+
+

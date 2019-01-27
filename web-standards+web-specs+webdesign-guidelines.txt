@@ -1,0 +1,161 @@
+Web-standards, Web 2.0+ specs & webdesign guideliness
+https://www.w3.org/TR/NOTE-datetime-970915
+https://www.w3.org/1998/.status/NOTE-datetime-970915/status
+https://www.w3.org/2019/Process-20190301/
+https://developer.mozilla.org/en-US/
+https://tc39.es/ecma262/
+https://idea.whatwg.org/
+https://spec.whatwg.org/
+https://www.sitepoint.com/
+https://www.w3schools.com/
+https://html.spec.whatwg.org/multipage/
+https://url.spec.whatwg.org/
+https://fetch.spec.whatwg.org/
+https://encoding.spec.whatwg.org/
+https://compat.spec.whatwg.org/
+https://www.mozdev.org/
+Zen CSS garden...
+
++ this HTML5+CSS3+JavaScript-v6+-autocompletion-via-abbreviations tool/plug-in for text-editor apps (like Notepad++, Notepad2-mod, Notepad3, Notepadqq, Spacemacs, NeoVim, Emacsen, Cream Emacs/Vim, SublimeText2, CUDA Text, GitHub Atom, Adobe Brackets, BabelPad, etc. & for computer-programming/sofware-engineering IDEs) --- see also: the .php/.js script (hosted on my http://gist.github.org and also use SearchEverything to scan my PCs for those files...) written by Aleksandar Kamburov ( http://kamburov.net ) for me, by OmegaKO@animerulezzz.org & modified by me ( https://github.com/[редактирано]/Bulogos ) to do the same as https://docs.emmet.io/cheat-sheet/ does - but localized to the Bulgarian language (you can also do your own forks if you don't like my Bulgarian abbreviations of the HTML5/CSS3/JavaScript tags/keywords, etc.)!):
+http://emmet.io
+
+http://commandlinefu.com
+http://snipplr.com
+http://unix.stackexchange.com
+http://superuser.com
+http://askubuntu.com
+http://ubuntuforums.org
+http://omgubuntu.co.uk
+http://caniuse.com
+http://w3.org
+http://w3c.org
+http://whatwg.com - the HTML5 Living Standard
+http://unicode.org
+http://ieee.org
+http://ietf.org
+http://iso.org
+http://ipu.com (International Postal Union)
+http://bas.bg
+
+HTML5+CSS3+JS-abbreviations system - see online & add to Notepad++ --- http://emmet.io , etc.; CSS, SASS, SACS, LESS - CSS-extension languages, etc.
+
+
+````
+https://docs.emmet.io/
+https://docs.emmet.io/cheat-sheet/
+More developer tools:
+
+Emmet LiveStyle
+Real-time bi-directional edit tool for CSS, LESS and SCSS.
+Emmet Re:view
+Fast and easy way to test responsive design side-by-side.
+Emmet — the essential toolkit for web-developers
+Emmet is a web-developer’s toolkit that can greatly improve your HTML & CSS workflow:
+
+Play demoTry it yourself
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Demo</title>
+</head>
+<body>
+    
+</body>
+</html>
+“Expand Abbreviation” (Tab key)
+“Next Edit Point” (Ctrl+Alt+→)
+“Previous Edit Point” (Ctrl+Alt+←)
+“Balance” (Ctrl+D)
+“Select Next Item” (Shift+Ctrl+.)
+“Select Previous Item” (Shift+Ctrl+,)
+“Toggle Comment” (Ctrl+/)
+▶ Watch demo
+Basically, most text editors out there allow you to store and re-use commonly used code chunks, called “snippets”. While snippets are a good way to boost your productivity, all implementations have common pitfalls: you have to define the snippet first and you can’t extend them in runtime.
+
+Emmet takes the snippets idea to a whole new level: you can type CSS-like expressions that can be dynamically parsed, and produce output depending on what you type in the abbreviation. Emmet is developed and optimised for web-developers whose workflow depends on HTML/XML and CSS, but can be used with programming languages too.
+
+Start learning Emmet with the abbreviation syntax and available actions.
+
+Download
+plugin for your favourite editor
+
+Support: info@emmet.io
+Created with DocPad and Gulp.js
+Minimal theme by orderedlist
+
+View page source on GitHub
+````
+
+(SmashingMagazine.com ?
+boingboing.net...
+lifehacker.com ...
+howtogeek.com
+makeuseof.com
+ubuntupit.org
+omgubuntu
+dedoimedo.com
+
+alternativeto.net ...
+howstuffworks.com
+https://www.askvg.com/ - vg vishal - windowsinternals
+https://github.com/zodiacon/WindowsInternals
+https://docs.microsoft.com/bg-bg/sysinternals/ (MS Windows Sysinternals)
+etc.)
+
+---
++ WebAssembly (wasm) + WebGL + JavaScript v6+ (v4/v5-to-v6+-transpiler) + Java & JavaME spec...
+---
++ C/C++
+https://www.boost.org/
+https://dl.bintray.com/boostorg/release/1.72.0/source/
+
+https://isocpp.org/std/the-standard
+https://github.com/cplusplus/draft
+http://www.open-std.org/jtc1/sc22/wg21/
+https://en.wikipedia.org/wiki/C%2B%2B
+http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4296.pdf
+http://www.cppreference.com/
+https://en.cppreference.com/w/cpp/experimental
+http://users.monash.edu/~damian/papers/HTML/ModestProposal.html
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.34.2481&rep=rep1&type=pdf
+
+WebGL:
+...
+OpenGLv3+:
+...
+
+OpenCL:
+https://www.khronos.org/registry/OpenCL/specs/2.2/pdf/OpenCL_Cxx.pdf
+SDL:
+...
+...
+
+---
+
+Other programming languages:
+
+Perl5:
+...
+Python3:
+...
+Julia:
+...
+Lua:
+...
+Rust:
+...
+Go (programming language):
+...
+FreePascal + LazarusIDE:
+...
+C#/.NET Core:
+...
+Elixir (programming language):
+...
+Rebol (programming language):
+...
+x85 assembly language:
+...
+
+???:
+...
